@@ -6,6 +6,8 @@ import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
+import android.support.transition.Transition;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -37,12 +39,18 @@ public class ScrollGalleryView extends LinearLayout {
     // Options
     private int thumbnailSize; // width and height in pixels
     private boolean zoomEnabled;
-    private boolean thumbnailsHiddenEnabled;
+    private boolean isThumbnailsHidden;
+    private boolean hideThumbnailsOnClick;
+    private Integer hideThumbnailsAfterDelay;
 
     // Views
     private LinearLayout thumbnailsContainer;
     private HorizontalScrollView horizontalScrollView;
     private ViewPager viewPager;
+
+    // Transitions
+    private Transition thumbnailsTransition;
+    private boolean useDefaultThumbnailsTransition;
 
     // Listeners
     private final ViewPager.SimpleOnPageChangeListener viewPagerChangeListener = new ViewPager.SimpleOnPageChangeListener() {
@@ -57,6 +65,28 @@ public class ScrollGalleryView extends LinearLayout {
             viewPager.setCurrentItem((int) v.getId(), true);
         }
     };
+
+    private OnImageClickListener onImageClickListener;
+
+    private OnImageClickListener innerOnImageClickListener = new OnImageClickListener() {
+        @Override
+        public void onClick() {
+            if (hideThumbnailsOnClick) {
+                if (isThumbnailsHidden) {
+                    showThumbnails();
+                    isThumbnailsHidden = false;
+                } else {
+                    hideThumbnails();
+                    isThumbnailsHidden = true;
+                }
+            }
+            if (onImageClickListener != null) onImageClickListener.onClick();
+        }
+    };
+
+    public interface OnImageClickListener {
+        void onClick();
+    }
 
     public ScrollGalleryView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -77,16 +107,34 @@ public class ScrollGalleryView extends LinearLayout {
     public ScrollGalleryView setFragmentManager(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
         initializeViewPager();
+
+        if (hideThumbnailsAfterDelay != null) hideThumbnailsAfterDelay(hideThumbnailsAfterDelay);
+
         return this;
     }
 
+    /**
+     *
+     * @return inner ViewPager
+     */
     public ViewPager getViewPager() {
         return viewPager;
     }
 
     /**
+     * Set up OnImageClickListener for your gallery images
+     * You should set OnImageClickListener only before setFragmentManager call!
+     * @param onImageClickListener which is called when you click on image
+     * @return ScrollGalleryView
+     */
+    public ScrollGalleryView addOnImageClickListener(OnImageClickListener onImageClickListener) {
+        this.onImageClickListener = onImageClickListener;
+        return this;
+    }
+
+    /**
      * Set up OnPageChangeListener for internal ViewPager
-     * @param listener
+     * @param listener which is used by internal ViewPager
      */
     public void addOnPageChangeListener(final ViewPager.OnPageChangeListener listener) {
         viewPager.clearOnPageChangeListeners();
@@ -160,10 +208,92 @@ public class ScrollGalleryView extends LinearLayout {
         return this;
     }
 
-    public ScrollGalleryView hideThumbnails(boolean thumbnailsHiddenEnabled) {
-        this.thumbnailsHiddenEnabled = thumbnailsHiddenEnabled;
-        horizontalScrollView.setVisibility(GONE);
+    /**
+     * If you enabled this option, hideThumbnailsOnClick() method will not work
+     * @param isThumbnailsHidden hides thumbnails container
+     * @return ScrollGalleryView
+     */
+    public ScrollGalleryView withHiddenThumbnails(boolean isThumbnailsHidden) {
+        if (this.isThumbnailsHidden && !isThumbnailsHidden) {
+            showThumbnails();
+        } else if (!this.isThumbnailsHidden && isThumbnailsHidden) {
+            hideThumbnails();
+        }
+        this.isThumbnailsHidden = isThumbnailsHidden;
+
         return this;
+    }
+
+    /**
+     *
+     * Keep in mind that this method do not work with enabled isThumbnailsHidden option
+     * @param hideThumbnailsOnClick hides thumbnails container on image click
+     * @return ScrollGalleryView
+     */
+    public ScrollGalleryView hideThumbnailsOnClick(boolean hideThumbnailsOnClick) {
+        if (!isThumbnailsHidden) {
+            this.hideThumbnailsOnClick = hideThumbnailsOnClick;
+            if (hideThumbnailsOnClick) this.useDefaultThumbnailsTransition = true;
+        }
+        return this;
+    }
+
+    /**
+     *
+     * Keep in mind that this method do not work with enabled isThumbnailsHidden option
+     * @param hideThumbnailsOnClick hides thumbnails container on image click
+     * @param thumbnailsTransition null is used to disable transation
+     * @return ScrollGalleryView
+     */
+    public ScrollGalleryView hideThumbnailsOnClick(boolean hideThumbnailsOnClick, Transition thumbnailsTransition) {
+        if (!isThumbnailsHidden) {
+            this.hideThumbnailsOnClick = hideThumbnailsOnClick;
+            this.thumbnailsTransition = thumbnailsTransition;
+        }
+        return this;
+    }
+
+    /**
+     * Automatically hide thumbnails container after specified delay
+     * @param hideThumbnailsAfterDelay delay in ms
+     * @return ScrollGalleryView
+     */
+    public ScrollGalleryView hideThumbnailsAfter(int hideThumbnailsAfterDelay) {
+        if (!isThumbnailsHidden) {
+            this.hideThumbnailsAfterDelay = hideThumbnailsAfterDelay;
+        }
+        return this;
+    }
+
+    public void showThumbnails() {
+        setThumbnailsTransition();
+        horizontalScrollView.setVisibility(VISIBLE);
+        // Hide thumbnails container when hideThumbnailsAfterDelay option is enabled
+        if (hideThumbnailsAfterDelay != null) hideThumbnailsAfterDelay(hideThumbnailsAfterDelay);
+    }
+
+    public void hideThumbnails() {
+        setThumbnailsTransition();
+        horizontalScrollView.setVisibility(GONE);
+    }
+
+    private void hideThumbnailsAfterDelay(int delay) {
+        horizontalScrollView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hideThumbnails();
+                isThumbnailsHidden = !isThumbnailsHidden;
+            }
+        }, delay);
+    }
+
+    // Make choice between default and provided by user transition
+    private void setThumbnailsTransition() {
+        if (thumbnailsTransition == null && useDefaultThumbnailsTransition) {
+            TransitionManager.beginDelayedTransition(horizontalScrollView);
+        } else if (thumbnailsTransition != null) {
+            TransitionManager.beginDelayedTransition(horizontalScrollView, thumbnailsTransition);
+        }
     }
 
     private Bitmap getDefaultThumbnail() {
@@ -208,7 +338,7 @@ public class ScrollGalleryView extends LinearLayout {
 
     private void initializeViewPager() {
         viewPager = (HackyViewPager) findViewById(R.id.viewPager);
-        pagerAdapter = new ScreenSlidePagerAdapter(fragmentManager, mListOfMedia, zoomEnabled);
+        pagerAdapter = new ScreenSlidePagerAdapter(fragmentManager, mListOfMedia, zoomEnabled, innerOnImageClickListener);
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(viewPagerChangeListener);
     }

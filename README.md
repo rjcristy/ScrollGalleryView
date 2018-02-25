@@ -1,29 +1,32 @@
 # ScrollGalleryView
 
 [![Build Status](https://travis-ci.org/VEINHORN/ScrollGalleryView.svg?branch=master)](https://travis-ci.org/VEINHORN/ScrollGalleryView)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ScrollGalleryView-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/2472)
 [![Join the chat at https://gitter.im/VEINHORN/ScrollGalleryView](https://badges.gitter.im/VEINHORN/ScrollGalleryView.svg)](https://gitter.im/VEINHORN/ScrollGalleryView?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Android library for creating image/video gallery with thumbnails on bottom of the screen. Just add your images using simple API.
+ScrollGalleryView is a flexible library which helps you to create awesome media galleries in your Android application. It's easily integrated with the most popular image loading libraries such as Picasso, Glide and Fresco.
 
 ![ScrollGalleryView](http://i.imgur.com/xrBt4Xx.gif)
 
-## Features
+## Key features
+
 - Easy way to select images in gallery (thumbnails)
 - Zooming
 - Simple API
 - Video
 
-## Sample application
-The sample application published on Google Play.
+## Installing
 
-[![Get it on Google Play](http://www.android.com/images/brand/get_it_on_play_logo_small.png)](https://play.google.com/store/apps/details?id=com.veinhorn.scrollgalleryview)
+Add to your application `build.gradle`:
 
-## Gradle Dependency
 ```gradle
 compile 'com.veinhorn.scrollgalleryview:library:1.0.7'
 ```
 
 ## Usage
+
+Add to your layout:
+
 ```xml
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -35,6 +38,8 @@ compile 'com.veinhorn.scrollgalleryview:library:1.0.7'
         android:background="#000"/>
 </LinearLayout>
 ```
+
+Then in your activity:
 
 ```java
 public class MainActivity extends FragmentActivity {
@@ -88,19 +93,55 @@ public class MainActivity extends FragmentActivity {
     }
 }
 ```
+### Adding media
+
+ScrollGalleryView supports different types of media such as images and videos. You can create image gallery, video gallery, or mix them in any way. To abstract from concreate way of image loading ScrollGalleryView uses [MediaLoader](library/src/main/java/com/veinhorn/scrollgalleryview/loader/MediaLoader.java) so it makes possible to use different image loading libraries depending on your needs (Picasso, Glide, Fresco).
+
+#### **Picasso** loader
+
+#### Default image loader
+
+Library is also contains default image loader but it's not optimized for performance.
+
+> Note: it's highly recommended to use custom image loader against default
+
+### Configuration
+
+You can specify a bunch of additional settings during gallery initialization.
+
+|Option|Method|Description|
+|------|------|-----------|
+| Thumbnail size | `.setThumbnailSize(200)` | You can configure thumbnails size in |
+| Zoom | `.setZoom(true)` | Enable zoom |
+| Hide thumbnails | `.withHiddenThumbnails(false)` | Hide scroll view container with thumbnails on the bottom of screen |
+| Hide thumbnails on click | `.hideThumbnailsOnClick(true)` | Hide scroll view container with thumbnails when you click on main image area |
+
+## Sample application
+
+The sample application published on Google Play.
+
+[![Get it on Google Play](http://www.android.com/images/brand/get_it_on_play_logo_small.png)](https://play.google.com/store/apps/details?id=com.veinhorn.scrollgalleryview)
 
 ## License
 
-    Copyright 2015, 2018 Boris Korogvich
+    MIT License
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+    Copyright (c) 2015, 2018 Boris Korogvich
 
-       http://www.apache.org/licenses/LICENSE-2.0
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.

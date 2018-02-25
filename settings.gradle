@@ -1,1 +1,1 @@
-include ':library', ':app', ':example'
+include ':library', ':picasso-loader', ':app', ':example'
