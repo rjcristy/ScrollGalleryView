@@ -43,6 +43,11 @@ public class DefaultImageLoader implements MediaLoader {
         }
     }
 
+    @Override
+    public void onDownload() {
+
+    }
+
     private void loadBitmap(Context context) {
         if (mBitmap == null) {
             mBitmap = ((BitmapDrawable) context.getResources().getDrawable(mId)).getBitmap();

@@ -50,6 +50,11 @@ public class DefaultVideoLoader implements MediaLoader {
         callback.onSuccess();
     }
 
+    @Override
+    public void onDownload() {
+
+    }
+
     private void displayVideo(Context context, String url) {
         Intent intent = new Intent(context, VideoPlayerActivity.class);
         intent.putExtra(Constants.URL, url);
