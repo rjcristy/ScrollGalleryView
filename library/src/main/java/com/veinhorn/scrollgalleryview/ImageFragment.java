@@ -57,6 +57,16 @@ public class ImageFragment extends Fragment {
             viewPager.setLocked(isLocked);
         }
 
+        downloadImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(), "adasds", Toast.LENGTH_LONG).show();
+                if(mMediaInfo != null)
+                    mMediaInfo.getLoader().onDownload();
+            }
+        });
+
+
         loadImageToView();
 
         return rootView;
@@ -67,14 +77,6 @@ public class ImageFragment extends Fragment {
             mMediaInfo.getLoader().loadMedia(getActivity(), photoView, new MediaLoader.SuccessCallback() {
                 @Override
                 public void onSuccess() {}
-            });
-
-            downloadImageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(getContext(), "adasds", Toast.LENGTH_LONG).show();
-                    mMediaInfo.getLoader().onDownload();
-                }
             });
 
             playButtonImageView.setVisibility( mMediaInfo.getLoader().isImage() ? View.GONE : View.VISIBLE);
