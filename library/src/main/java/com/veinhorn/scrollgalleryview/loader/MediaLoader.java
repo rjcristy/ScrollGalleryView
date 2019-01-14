@@ -26,6 +26,13 @@ public interface MediaLoader {
 
     void loadThumbnail(Context context, ImageView thumbnailView, SuccessCallback callback);
 
+
+    /**
+     */
+
+    void onDownload();
+
+
     /**
      * Implementation may call this callback for report to imageView, what it's image was changed
      */

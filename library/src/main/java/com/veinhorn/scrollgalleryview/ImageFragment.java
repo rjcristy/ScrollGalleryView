@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.github.chrisbanes.photoview.PhotoView;
@@ -22,6 +23,7 @@ public class ImageFragment extends Fragment {
     private PhotoView photoView;
     private ScrollGalleryView.OnImageClickListener onImageClickListener;
     private ImageView playButtonImageView;
+    private ImageButton downloadImageButton;
 
     public void setOnImageClickListener(ScrollGalleryView.OnImageClickListener onImageClickListener) {
         this.onImageClickListener = onImageClickListener;
@@ -37,6 +39,8 @@ public class ImageFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.image_fragment, container, false);
         photoView = rootView.findViewById(R.id.photoView);
         playButtonImageView = rootView.findViewById(R.id.play_button);
+        downloadImageButton = rootView.findViewById(R.id.download_button);
+
         if (onImageClickListener != null) {
             photoView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -62,6 +66,13 @@ public class ImageFragment extends Fragment {
             mMediaInfo.getLoader().loadMedia(getActivity(), photoView, new MediaLoader.SuccessCallback() {
                 @Override
                 public void onSuccess() {}
+            });
+
+            downloadImageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mMediaInfo.getLoader().onDownload();
+                }
             });
 
             playButtonImageView.setVisibility( mMediaInfo.getLoader().isImage() ? View.GONE : View.VISIBLE);
