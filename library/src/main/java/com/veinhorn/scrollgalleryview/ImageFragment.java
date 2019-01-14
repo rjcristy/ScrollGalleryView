@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.veinhorn.scrollgalleryview.loader.MediaLoader;
@@ -71,6 +72,7 @@ public class ImageFragment extends Fragment {
             downloadImageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Toast.makeText(getContext(), "adasds", Toast.LENGTH_LONG).show();
                     mMediaInfo.getLoader().onDownload();
                 }
             });
