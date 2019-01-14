@@ -60,7 +60,6 @@ public class ImageFragment extends Fragment {
         downloadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "adasds", Toast.LENGTH_LONG).show();
                 if(mMediaInfo != null)
                     mMediaInfo.getLoader().onDownload();
             }
